@@ -1,9 +1,10 @@
 (ns orbitdb.eventlog)
 
-(defn eventlog [^js  orbitdb-instance {:keys [name address]}]
-  (.eventlog orbitdb-instance (or name address)))
+(defn eventlog [^js  orbitdb-instance {:keys [name address opts]
+                                       :or {opts {}}}]
+  (.eventlog orbitdb-instance (or name address) (clj->js opts)))
 
-(defn add-event [^js  eventlog-instance data]
+(defn add-event [^js eventlog-instance data]
   (.add eventlog-instance (clj->js data)))
 
 (defn get-event [^js eventlog-instance hash]

@@ -4,10 +4,10 @@
             [cljs.core.async :refer [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [orbitdb.core :as orbitdb]
+            [orbitdb.keyvalue :as keyvalue]
             [orbitdb.eventlog :as eventlog]
             [orbitdb.access-controllers :as access-controllers]
-
-            ["CustomController" :as custom-controller :default BasicController]
+            ["CustomController" :default BasicController]
             ))
 
 (nodejs/enable-util-print!)
@@ -50,9 +50,7 @@
                                  (if (= 4 i)
                                    creature
                                    (recur (inc i)
-                                          (eventlog/get-event db (:next creature)))))
-                 ]
-
+                                          (eventlog/get-event db (:next creature)))))]
              (is (= (.-root db-address) (.-root (orbitdb/address same-db))))
              (is (= (.-path db-address) (.-path (orbitdb/address same-db))))
              (is (= 5 (count all-creatures)))
@@ -65,19 +63,24 @@
 (deftest test-access-controllers
   (async done
          (go
-           (let [controllers access-controllers/access-controllers
-                 ;; controller (new access-controllers/Foo1)
-                 _ (access-controllers/add-access-controller BasicController)
-
+           (let [my-controller (access-controllers/create-access-controller)
+                 _ (access-controllers/add-access-controller my-controller #_BasicController)
+                 orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
+                                                                 :opts {:AccessControllers access-controllers/access-controllers}}))
+                 my-id (-> orbitdb-instance .-identity .-id)
+                 db (<p! (keyvalue/keyvalue orbitdb-instance {:name "kvstore"
+                                                              :accessController {:type "othertype"
+                                                                                 ;; :write [my-id]
+                                                                                 }}))
+                 hash (<p! (keyvalue/set-key db "fu" {:fu "bar"}))
+                 val (keyvalue/get-value db "fu")
                  ]
 
-             (prn BasicController)
+             (prn hash val)
 
-             (prn custom-controller)
+             (is (= val {:fu "bar"}))
 
-             ;; (prn (js-keys controller))
+             ;; (prn BasicController my-controller)
 
-             ;; (prn (js-keys (-> access-controllers/Foo1 #_.-prototype #_.-constructor)))
-
-             ;; (orbitdb/disconnect orbitdb-instance)
+             (orbitdb/disconnect orbitdb-instance)
              (done)))))

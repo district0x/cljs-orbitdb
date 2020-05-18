@@ -5,53 +5,36 @@
 (defonce access-controllers ^js AccessControllers)
 
 (defn add-access-controller [^js controller]
-  (.addAccessController access-controllers (clj->js {:AccessController controller })))
+  (.addAccessController access-controllers (clj->js {:AccessController controller})))
 
-;; class OtherAccessController extends AccessController {
+(defn create-access-controller []
+  (let [ac-obj #js {:type "othertype"
+                    #_:canAppend #_(fn [entry identity-provider]
 
-;;   static get type () { return 'othertype' } // Return the type for this controller
+                                     (prn "entry" entry)
 
-;;   async canAppend(entry, identityProvider) {
-;;     // logic to determine if entry can be added, for example:
-;;     if (entry.payload === "hello world" && entry.identity.id === identity.id && identityProvider.verifyIdentity(entry.identity))
-;;       return true
+                                     true)}]
+    (set! (.-prototype ac-obj) (.-prototype AccessController))
 
-;;     return false
-;;   }
-;;   async grant (access, identity) {} // Logic for granting access to identity
-;; }
+    (set! (.. ac-obj -prototype -canAppend)
+          (fn [entry identity-provider]
 
-;; (prn "OrbitDBAccessController" OrbitDBAccessController)
+            (prn "entry" entry)
 
-(defn Foo1
-  {:jsdoc ["@constructor"]}
-  []
-  (this-as this
-    this))
+            true))
 
-;; (aset)
 
-(gobj/extend Foo1
-  #js {:type (fn []
-               (this-as this
-                 "othertype"
-                 ))}
-  )
+    #_    (gobj/extend
+              (.-prototype ac-obj)
+            (.-prototype AccessController)
 
-(gobj/extend
-  (.-prototype Foo1)
-  (.-prototype AccessController)
+            #js {:canAppend (fn [entry identity-provider]
+                              (js/console.log "@@@ canappend" entry)
+                              (js/Promise.resolve true))}
 
-  ;; #js {:type (fn []
-  ;;             (this-as this
-  ;;               "othertype"
-  ;;               ))}
+            #js {:grant (fn [access identity]
+                          )}
 
-  #js {:canAppend (fn [entry identity-provider]
-                    (js/console.log "@@@ canappend" entry)
-                    (js/Promise.resolve true))}
+            )
 
-  #js {:grant (fn [access identity]
-                    )}
-
-  )
+    ac-obj))
