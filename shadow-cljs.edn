@@ -17,7 +17,9 @@
 
            :js-options
            {:resolve {"CustomController" {:target :file
-                                          :file "src/tests/BasicController.js"}}}
+                                          :file "src/tests/BasicController.js"
+                                          ;; :file "./node_modules/orbit-db-access-controllers/src/orbitdb-access-controller.js"
+                                          }}}
 
            ;; :compiler-options {:output-feature-set :es6
            ;;                    :infer-externs :auto

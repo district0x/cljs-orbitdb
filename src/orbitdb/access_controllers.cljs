@@ -1,11 +1,10 @@
 (ns orbitdb.access-controllers
   (:require [goog.object :as gobj]
-            ["orbit-db-access-controllers" :refer (AccessController) :as AccessControllers]))
-
-(defonce access-controllers ^js AccessControllers)
+            ["orbit-db-access-controllers" :refer (AccessController OrbitDBAccessController) :as AccessControllers]))
 
 (defn add-access-controller [^js controller]
-  (.addAccessController access-controllers (clj->js {:AccessController controller})))
+  (.addAccessController ^js AccessControllers (clj->js {:AccessController controller}))
+  AccessControllers)
 
 (defn- CustomAccessController [orbitdb options]
   (this-as this
@@ -17,26 +16,36 @@
         (js/Object.create (.-prototype AccessController)))
 
   (set! (.. CustomAccessController -prototype -constructor)
-      AccessController)
+        AccessController)
 
   (set! (.. CustomAccessController -type)
-      "othertype")
+        "othertype")
+
+  (set! (.. CustomAccessController -create)
+              (fn []))
+
+  (set! (.. CustomAccessController -prototype -canAppend)
+        (fn [entry identity-provider]
+
+          (js/console.log "@@@ canAppend" )
+
+          (js/Promise.resolve false)))
 
   CustomAccessController)
 
 #_(defn create-access-controller []
-  (let [ac-obj #js {:type "othertype"}]
+    (let [ac-obj #js {:type "othertype"}]
 
-    (set! (.-prototype ac-obj) (.-prototype AccessController))
+      (set! (.-prototype ac-obj) (.-prototype AccessController))
 
-    (set! (.. ac-obj -prototype -canAppend)
-          (fn [entry identity-provider]
+      (set! (.. ac-obj -prototype -canAppend)
+            (fn [entry identity-provider]
 
-            (js/console.log "@@@ canAppend" )
+              (js/console.log "@@@ canAppend" )
 
-            (js/Promise.resolve false)))
+              (js/Promise.resolve false)))
 
-    ac-obj))
+      ac-obj))
 
 (defn supported? [type]
   (.isSupported ^js AccessControllers type))

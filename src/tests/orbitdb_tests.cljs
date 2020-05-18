@@ -8,9 +8,8 @@
             [orbitdb.eventlog :as eventlog]
             [orbitdb.access-controllers :as access-controllers]
             ["CustomController" :default BasicController]
-
             ;; ["orbit-db-access-controllers" :as AccessControllers ]
-
+            ;; ["./BasicController" :as BasicController]
             ))
 
 (nodejs/enable-util-print!)
@@ -62,14 +61,15 @@
   (async done
          (go
            (let [my-controller (access-controllers/create-access-controller)
-                 _ (access-controllers/add-access-controller my-controller #_BasicController)
+                 controllers (access-controllers/add-access-controller my-controller #_BasicController )
                  orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
-                                                                 :opts {:AccessControllers access-controllers/access-controllers}}))
+                                                                 :opts {:AccessControllers controllers}}))
 
                  my-id (-> orbitdb-instance .-identity .-id)
 
                  db (<p! (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {:write [my-id]
-                                                                                                  ;; :type "othertype"
+                                                                                                  :type "othertype"
+                                                                                                  ;; :type "orbitdb"
                                                                                                   }
                                                                                :directory "/home/filip/orbitdb/test.kvstore"
                                                                                :overwrite true
@@ -79,8 +79,10 @@
                  val (keyvalue/get-value db "fu")
                  ]
 
-             (prn (access-controllers/supported? "orbitdb"))
-             (prn (access-controllers/supported? "othertype"))
+             ;; (prn DefaultAccessController)
+
+             (is (access-controllers/supported? "orbitdb"))
+             (is (access-controllers/supported? "othertype"))
 
              ;; (prn (js-keys BasicController) (js-keys my-controller))
              ;; (prn (aget BasicController "superClass_"))

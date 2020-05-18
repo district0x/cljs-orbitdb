@@ -1,14 +1,28 @@
-const AccessController = require('orbit-db-access-controllers')
+const { AccessController } = require('orbit-db-access-controllers')
+
+const type = 'othertype'
 
 class BasicController extends AccessController {
 
+  constructor (orbitdb, options = {}) {
+    super()
+    this._orbitdb = orbitdb
+    this._db = null
+    this._options = options || {}
+  }
+
+  static async create (orbitdb, options) {
+    const ac = new BasicController(orbitdb, options);
+    return ac;
+  }
+
   static get type () {
+    return type
+  }
 
-    // console.log("type");
-
-    return 'othertype';
-
-  } // Return the type for this controller
+  get address () {
+    return this._db.address
+  }
 
   async canAppend(entry, identityProvider) {
     console.log("canAppend?");
@@ -18,8 +32,20 @@ class BasicController extends AccessController {
   }
 
   async grant (access, identity) {
-      return true;
+    return true;
   } // Logic for granting access to identity
+
+  async revoke (access, identity) { return false }
+
+  /* AC creation and loading */
+  async load (address) {}
+
+  /* Returns AC manifest parameters object */
+  async save () {}
+
+  /* Called when the database for this AC gets closed */
+  async close () {}
+
 }
 
 module.exports = BasicController
