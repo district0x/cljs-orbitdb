@@ -1,0 +1,9 @@
+.lein-failures
+.shadow-cljs/
+node_modules/
+resources/
+server/
+!src/server/
+tests/
+orbitdb/
+!src/orbitdb/

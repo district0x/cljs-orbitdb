@@ -1,0 +1,23 @@
+{
+  "name": "cljs-orbitdb",
+  "version": "0.0.1",
+  "private": false,
+  "scripts": {
+    "tests:once": "shadow-cljs compile tests && node tests/api-tests.js",
+    "tests:watch": "shadow-cljs watch tests --config-merge '{:autorun true}'",
+    "clean": "git clean -fdx",
+    "deps": "yarn install --frozen-lockfile"
+  },
+  "dependencies": {
+    "ipfs": "^0.43.3",
+    "ipfs-http-client": "^44.0.3",
+    "orbit-db": "^0.23.1"
+  },
+  "devDependencies": {
+    "shadow-cljs": "2.9.0",
+    "source-map-support": "0.5.16"
+  },
+  "engines": {
+    "node": ">=11.14.0"
+  }
+}
