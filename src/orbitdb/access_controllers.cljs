@@ -9,7 +9,7 @@
 
 (defn create-access-controller []
   (let [ac-obj #js {:type "othertype"
-                    #_:canAppend #_(fn [entry identity-provider]
+                    #_#_:canAppend (fn [entry identity-provider]
 
                                      (prn "entry" entry)
 
