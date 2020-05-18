@@ -5,5 +5,6 @@ resources/
 server/
 !src/server/
 tests/
+!src/tests/
 orbitdb/
 !src/orbitdb/

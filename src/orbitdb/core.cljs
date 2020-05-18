@@ -5,8 +5,9 @@
 (defn create-instance
   "Creates and returns an instance of OrbitDB
   opts is a map with following optional values"
-  [{:keys [ipfs-host]}]
-  (.createInstance ^js OrbitDB (^js IpfsClient ipfs-host)))
+  [{:keys [ipfs-host opts]
+    :or {opts {}}}]
+  (.createInstance ^js OrbitDB (^js IpfsClient ipfs-host) (clj->js opts)))
 
 (defn create
   "Creates and opens an OrbitDB database.
