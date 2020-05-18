@@ -8,6 +8,9 @@
             [orbitdb.eventlog :as eventlog]
             [orbitdb.access-controllers :as access-controllers]
             ["CustomController" :default BasicController]
+
+            ;; ["orbit-db-access-controllers" :as AccessControllers ]
+
             ))
 
 (nodejs/enable-util-print!)
@@ -20,11 +23,6 @@
      :id id}))
 
 (defonce this-orbitdb (atom nil))
-
-#_(use-fixtures :once
-  {:before (fn [] (go
-                    (reset! this-orbitdb (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))))
-   :after (fn [])})
 
 (deftest test-eventlog
   (async done
@@ -67,16 +65,25 @@
                  _ (access-controllers/add-access-controller my-controller #_BasicController)
                  orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
                                                                  :opts {:AccessControllers access-controllers/access-controllers}}))
+
                  my-id (-> orbitdb-instance .-identity .-id)
-                 db (<p! (keyvalue/keyvalue orbitdb-instance {:name "kvstore"
-                                                              :accessController {:type "othertype"
-                                                                                 ;; :write [my-id]
-                                                                                 }}))
+
+                 db (<p! (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {:write [my-id]
+                                                                                                  ;; :type "othertype"
+                                                                                                  }
+                                                                               :directory "/home/filip/orbitdb/test.kvstore"
+                                                                               :overwrite true
+                                                                               :replicate false}))
+
                  hash (<p! (keyvalue/set-key db "fu" {:fu "bar"}))
                  val (keyvalue/get-value db "fu")
                  ]
 
-             (prn hash val)
+             (prn (access-controllers/supported? "orbitdb"))
+             (prn (access-controllers/supported? "othertype"))
+
+             ;; (prn (js-keys BasicController) (js-keys my-controller))
+             ;; (prn (aget BasicController "superClass_"))
 
              (is (= val {:fu "bar"}))
 

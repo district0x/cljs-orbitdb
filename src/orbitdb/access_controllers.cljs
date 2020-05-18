@@ -7,34 +7,36 @@
 (defn add-access-controller [^js controller]
   (.addAccessController access-controllers (clj->js {:AccessController controller})))
 
+(defn- CustomAccessController [orbitdb options]
+  (this-as this
+    (.call AccessController this orbitdb options)))
+
 (defn create-access-controller []
-  (let [ac-obj #js {:type "othertype"
-                    #_#_:canAppend (fn [entry identity-provider]
 
-                                     (prn "entry" entry)
+  (set! (.. CustomAccessController -prototype)
+        (js/Object.create (.-prototype AccessController)))
 
-                                     true)}]
+  (set! (.. CustomAccessController -prototype -constructor)
+      AccessController)
+
+  (set! (.. CustomAccessController -type)
+      "othertype")
+
+  CustomAccessController)
+
+#_(defn create-access-controller []
+  (let [ac-obj #js {:type "othertype"}]
+
     (set! (.-prototype ac-obj) (.-prototype AccessController))
 
     (set! (.. ac-obj -prototype -canAppend)
           (fn [entry identity-provider]
 
-            (prn "entry" entry)
+            (js/console.log "@@@ canAppend" )
 
-            true))
-
-
-    #_    (gobj/extend
-              (.-prototype ac-obj)
-            (.-prototype AccessController)
-
-            #js {:canAppend (fn [entry identity-provider]
-                              (js/console.log "@@@ canappend" entry)
-                              (js/Promise.resolve true))}
-
-            #js {:grant (fn [access identity]
-                          )}
-
-            )
+            (js/Promise.resolve false)))
 
     ac-obj))
+
+(defn supported? [type]
+  (.isSupported ^js AccessControllers type))
