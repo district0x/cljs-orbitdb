@@ -7,7 +7,7 @@ jobs:
   test:
     working_directory: ~/ci
     docker:
-      - image: district0x/cljs-dev:02e2108
+      - image: district0x/cljs-dev:85d4876
       - image: ipfs/go-ipfs:v0.5.1
         command: ["daemon", "--migrate=true", "--enable-pubsub-experiment"]
     steps:
@@ -18,15 +18,12 @@ jobs:
             - npm-packages-{{ checksum "yarn-lock.json" }}
       - run:
           name: Install node modules
-          command: npm install
+          command: yarn deps
       - save_cache:
           name: Save npm package cache
           key: npm-packages-{{ checksum "yarn-lock.json" }}
           paths:
             - ./node_modules/
-      # - run:
-      #     name: migrate contracts
-      #     command: npx truffle migrate --network ganache
       - run:
           command:
             yarn tests:once
