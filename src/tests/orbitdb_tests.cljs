@@ -68,8 +68,8 @@
                  my-id (-> orbitdb-instance .-identity .-id)
 
                  db (<p! (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {:write [my-id]
-                                                                                                  :type "othertype"
-                                                                                                  ;; :type "orbitdb"
+                                                                                                  ;; :type "othertype"
+                                                                                                  :type "orbitdb"
                                                                                                   }
                                                                                :directory "/home/filip/orbitdb/test.kvstore"
                                                                                :overwrite true
