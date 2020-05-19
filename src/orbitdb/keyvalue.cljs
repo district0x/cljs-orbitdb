@@ -3,8 +3,8 @@
 (defn keyvalue [^js orbitdb-instance {:keys [name opts]}]
   (.keyvalue orbitdb-instance name (clj->js opts)))
 
-(defn set-key [^js eventlog-instance k v]
-  (.set eventlog-instance k (clj->js v)))
+(defn set-key [^js keyvalue-instance k v]
+  (.set keyvalue-instance k (clj->js v)))
 
-(defn get-value [^js eventlog-instance k]
-  (js->clj (.get eventlog-instance k) :keywordize-keys true))
+(defn get-value [^js keyvalue-instance k]
+  (js->clj (.get keyvalue-instance k) :keywordize-keys true))

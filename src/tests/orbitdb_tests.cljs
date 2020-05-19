@@ -6,11 +6,7 @@
             [orbitdb.core :as orbitdb]
             [orbitdb.keyvalue :as keyvalue]
             [orbitdb.eventlog :as eventlog]
-            [orbitdb.access-controllers :as access-controllers]
-            ["CustomController" :default BasicController]
-            ;; ["orbit-db-access-controllers" :as AccessControllers ]
-            ;; ["./BasicController" :as BasicController]
-            ))
+            [orbitdb.access-controllers :as access-controllers]))
 
 (nodejs/enable-util-print!)
 
@@ -57,39 +53,45 @@
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
 
+
 (deftest test-access-controllers
   (async done
          (go
-           (let [my-controller (access-controllers/create-access-controller)
-                 controllers (access-controllers/add-access-controller my-controller #_BasicController )
+           (let [my-controller (access-controllers/create-access-controller )
+                 controllers (access-controllers/add-access-controller my-controller)
                  orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
-                                                                 :opts {:AccessControllers controllers}}))
+                                                                 :opts {:AccessControllers controllers}
+                                                                 }))
 
-                 my-id (-> orbitdb-instance .-identity .-id)
+                 db (<p! (-> (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {
+                                                                                                   :type "othertype"
+                                                                                                   }
+                                                                                ;; :directory "/home/filip/orbitdb/test.kvstore"
+                                                                                :overwrite true
+                                                                                ;; :replicate false
+                                                                                })
 
-                 db (<p! (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {:write [my-id]
-                                                                                                  ;; :type "othertype"
-                                                                                                  :type "orbitdb"
-                                                                                                  }
-                                                                               :directory "/home/filip/orbitdb/test.kvstore"
-                                                                               :overwrite true
-                                                                               :replicate false}))
+                          (.then (fn [res]
+                                   (prn "RESULT" res)
+                                   res)
+
+                                 )
+
+                          (.catch (fn [error]
+
+                                    (prn "ERROR" error)
+
+                                    ))
+
+                          ))
 
                  hash (<p! (keyvalue/set-key db "fu" {:fu "bar"}))
-                 val (keyvalue/get-value db "fu")
-                 ]
+                 ;; val (keyvalue/get-value db "fu")
+                 _ (<p! (js/Promise.resolve true))]
 
-             ;; (prn DefaultAccessController)
+             (prn "BLA" db)
 
-             (is (access-controllers/supported? "orbitdb"))
-             (is (access-controllers/supported? "othertype"))
-
-             ;; (prn (js-keys BasicController) (js-keys my-controller))
-             ;; (prn (aget BasicController "superClass_"))
-
-             (is (= val {:fu "bar"}))
-
-             ;; (prn BasicController my-controller)
-
+             ;; (is (access-controllers/supported? "orbitdb"))
+             ;; (is (access-controllers/supported? "othertype"))
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
