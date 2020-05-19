@@ -2,28 +2,29 @@ version: 2.1
 
 orbs:
    slack: circleci/slack@3.4.2
+   node: circleci/node@1.1.6
 
 jobs:
   test:
     working_directory: ~/ci
     docker:
-      - image: district0x/cljs-dev:85d4876
+      - image: circleci/clojure:openjdk-11-node
       - image: ipfs/go-ipfs:v0.5.1
         command: ["daemon", "--migrate=true", "--enable-pubsub-experiment"]
+    environment:
+      NODE_VERSION: 12.16.1
+      YARN_VERSION: 1.22.1
     steps:
       - checkout
-      - restore_cache:
-          name: Restore npm package cache
-          keys:
-            - npm-packages-{{ checksum "yarn-lock.json" }}
-      - run:
-          name: Install node modules
-          command: yarn deps
-      - save_cache:
-          name: Save npm package cache
-          key: npm-packages-{{ checksum "yarn-lock.json" }}
-          paths:
-            - ./node_modules/
+      - node/install:
+          node-version: $NODE_VERSION
+          yarn-version: $YARN_VERSION
+      - node/with-cache:
+          dir: ./node_modules/
+          cache-version: yarn-packages-cljs
+          cache-key: yarn.lock
+          steps:
+            - run: yarn deps
       - run:
           command:
             yarn tests:once

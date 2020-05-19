@@ -13,7 +13,7 @@
            :output-dir "tests"
            :output-to "tests/orbitdb-tests.js"
            :ns-regexp "tests.orbitdb-*"
-           :optimizations :simple
+           :optimizations :none
 
            :js-options
            {:resolve {"CustomController" {:target :file
