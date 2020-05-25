@@ -27,6 +27,7 @@ jobs:
           cache-key: yarn.lock
           steps:
             - run: yarn deps
+      - run: yarn lint
       - run:
           command:
             yarn tests:once

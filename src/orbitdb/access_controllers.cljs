@@ -1,6 +1,9 @@
 (ns orbitdb.access-controllers
-  (:require [goog.object :as gobj]
-            ["orbit-db-access-controllers" :refer (AccessController) :as AccessControllers]))
+  (:require ["orbit-db-access-controllers"
+             :as
+             AccessControllers
+             :refer
+             [AccessController]]))
 
 (defn add-access-controller [^js controller]
   (.addAccessController ^js AccessControllers (clj->js {:AccessController controller}))
@@ -13,9 +16,13 @@
     (set! (.-prototype CustomAccessController) (js/Object.create (.-prototype AccessController)))
     (set! (.. CustomAccessController -prototype -constructor) CustomAccessController)
     (set! (.-type CustomAccessController) type)
-    (set! (.-create CustomAccessController) (fn [orbitdb options]
+    (set! (.-create CustomAccessController) (fn
+                                              ;; NOTE : args orbitdb options
+                                              [_ _]
                                               (new CustomAccessController)))
-    (set! (.. CustomAccessController -prototype -grant) (fn [access identity]))
+    (set! (.. CustomAccessController -prototype -grant) (fn
+                                                          ;; NOTE : args access identity
+                                                          [_ _]))
     (set! (.. CustomAccessController -prototype -save) (fn [] #js {}))
     (set! (.. CustomAccessController -prototype -canAppend) (fn [entity identity-provider]
                                                               (can-append? (js->clj entity :keywordize-keys true)

@@ -6,6 +6,7 @@
     "tests:once": "shadow-cljs compile tests && node tests/orbitdb-tests.js",
     "tests:watch": "shadow-cljs watch tests --config-merge '{:autorun true}'",
     "clean": "git clean -fdx",
+    "lint": "clj-kondo --config .clj-kondo/config.edn --lint src",
     "deps": "yarn install --frozen-lockfile"
   },
   "dependencies": {
@@ -15,7 +16,8 @@
   },
   "devDependencies": {
     "shadow-cljs": "2.9.0",
-    "source-map-support": "0.5.16"
+    "source-map-support": "0.5.16",
+    "clj-kondo": "^2020.1.13"
   },
   "engines": {
     "node": ">=12.16.1"

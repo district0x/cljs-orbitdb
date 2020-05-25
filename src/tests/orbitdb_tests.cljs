@@ -1,14 +1,15 @@
 (ns tests.orbitdb-tests
-  (:require [cljs.test :refer-macros [async deftest is use-fixtures]]
-            [cljs.nodejs :as nodejs]
-            [cljs.core.async :refer [go]]
+  (:require [cljs.core.async :refer [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
+            [cljs.nodejs :as nodejs]
+            [cljs.test :refer-macros [async deftest is]]
+            [orbitdb.access-controllers :as access-controllers]
             [orbitdb.core :as orbitdb]
-            [orbitdb.keyvalue :as keyvalue]
-            [orbitdb.eventlog :as eventlog]
+            [orbitdb.counter :as counter]
             [orbitdb.docstore :as docstore]
+            [orbitdb.eventlog :as eventlog]
             [orbitdb.feed :as feed]
-            [orbitdb.access-controllers :as access-controllers]))
+            [orbitdb.keyvalue :as keyvalue]))
 
 (nodejs/enable-util-print!)
 
@@ -61,7 +62,8 @@
   (async done
          (go
            (let [my-controller (access-controllers/create-access-controller {:type "mytype"
-                                                                             :can-append? (fn [entity identity-provider]
+                                                                             ;; NOTE: args entity identity-provider
+                                                                             :can-append? (fn [_ _]
                                                                                             true)})
                  controllers (access-controllers/add-access-controller my-controller)
                  orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
@@ -74,11 +76,11 @@
                                                                                :replicate false}})
                              (.catch (fn [error]
                                        (prn "ERROR" error)))))
-                 hash (<p! (-> (keyvalue/set-key db "fu" {:fu "bar"})
-                               (.then (fn [hash]
-                                        hash))
-                               (.catch (fn [error]
-                                         error))))
+                 _ (<p! (-> (keyvalue/set-key db "fu" {:fu "bar"})
+                            (.then (fn [hash]
+                                     hash))
+                            (.catch (fn [error]
+                                      error))))
                  val (keyvalue/get-value db "fu")]
              (is db)
              (is (access-controllers/supported? "mytype"))
@@ -90,7 +92,7 @@
   (async done
          (go
            (let [my-controller (access-controllers/create-access-controller {:type "mytype"
-                                                                             :can-append? (fn [entity identity-provider]
+                                                                             :can-append? (fn [_ _]
                                                                                             false)})
                  controllers (access-controllers/add-access-controller my-controller)
                  orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
@@ -121,9 +123,9 @@
                                                                     :opts {:directory "/home/filip/orbitdb/test.feedstore"
                                                                            :overwrite true
                                                                            :replicate false}}))
-                 hash1 (<p! (feed/add-event db {:title "Hello" :content "World"}))
+                 _ (<p! (feed/add-event db {:title "Hello" :content "World"}))
                  hash2 (<p! (feed/add-event db {:title "Fu" :content "Bar"}))
-                 hash3 (<p! (feed/add-event db {:title "Foo" :content "Bar"}))
+                 _ (<p! (feed/add-event db {:title "Foo" :content "Bar"}))
                  {{:keys [value]} :payload} (feed/get-event db hash2)
                  _ (<p! (feed/remove-event db hash2))
                  posts (map #(-> % :payload :value)
@@ -145,7 +147,7 @@
                                                                            :overwrite true
                                                                            :replicate false}}))
                  id (str (random-uuid))
-                 hash (<p! (docstore/put-doc db {:_id id :doc "bar"  :views 10}))
+                 _ (<p! (docstore/put-doc db {:_id id :doc "bar"  :views 10}))
                  _ (<p! (docstore/put-doc db {:_id (str (random-uuid)) :doc "fu"  :views 1}))
                  _ (<p! (docstore/put-doc db {:_id (str (random-uuid)) :doc "foo"  :views 5}))
                  bar2-id (str (random-uuid))
@@ -158,5 +160,23 @@
              (is (= "bar" (-> bar first :doc)))
              (is (= 3 (count all)))
              (is (= 1 (count >5)))
+             (orbitdb/disconnect orbitdb-instance)
+             (done)))))
+
+(deftest test-counter
+  (async done
+         (go
+           (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
+                 db (<p! (orbitdb/create-database orbitdb-instance {:name "play_count"
+                                                                    :type :counter
+                                                                    :opts {:directory "/home/filip/orbitdb/test.counter"
+                                                                           :overwrite true
+                                                                           :replicate false}}))
+                 count-before (counter/value db)
+                 _ (<p! (counter/increase db))
+                 count-after (counter/value db)]
+             (is db)
+             (is (= 0 count-before))
+             (is (= 1 count-after))
              (orbitdb/disconnect orbitdb-instance)
              (done)))))

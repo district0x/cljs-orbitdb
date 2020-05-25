@@ -14,16 +14,5 @@
            :output-to "tests/orbitdb-tests.js"
            :ns-regexp "tests.orbitdb-*"
            :optimizations :none
-
-           ;; :js-options
-           ;; {:resolve {"CustomController" {:target :file
-           ;;                                :file "src/tests/BasicController.js"
-           ;;                                ;; :file "./node_modules/orbit-db-access-controllers/src/orbitdb-access-controller.js"
-           ;;                                }}}
-
-           ;; :compiler-options {:output-feature-set :es6
-           ;;                    :infer-externs :auto
-           ;;                    :optimizations :simple}
-
            ;; needs to be set to false to report correct status code in CI
            :autorun false}}}

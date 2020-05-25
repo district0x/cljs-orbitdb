@@ -8,3 +8,4 @@ tests/
 !src/tests/
 orbitdb/
 !src/orbitdb/
+yarn-error.log

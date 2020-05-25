@@ -1,0 +1,2 @@
+{:linters {:single-key-in {:level :error}
+           :unsorted-required-namespaces {:level :warning}}}
