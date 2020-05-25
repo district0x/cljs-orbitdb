@@ -9,16 +9,16 @@
     :or {opts {}}}]
   (.createInstance ^js OrbitDB (^js IpfsClient ipfs-host) (clj->js opts)))
 
-(defn create
+(defn create-database
   "Creates and opens an OrbitDB database.
   `name` (string) : the database name,
   `type` (keyword): a supported database type
   `opts`: a kv map of options"
-  [^js orbitdb-instance database-name type opts]
-  (.create orbitdb-instance database-name (name type) (clj->js opts)))
+  [^js orbitdb-instance {:keys [name type opts]}]
+  (.create orbitdb-instance name (cljs.core/name type) (clj->js opts)))
 
 (defn address [database]
-  (.-address ^ js database))
+  (.-address ^js database))
 
 (defn disconnect [orbitdb]
   (.disconnect ^js orbitdb))

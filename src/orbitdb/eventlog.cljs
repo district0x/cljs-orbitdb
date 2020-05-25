@@ -1,17 +1,14 @@
-(ns orbitdb.eventlog)
+(ns orbitdb.eventlog
+  (:require [orbitdb.signatures :as signatures]))
 
-(defn eventlog [^js  orbitdb-instance {:keys [name address opts]
+(defn eventlog [^js orbitdb-instance {:keys [name address opts]
                                        :or {opts {}}}]
   (.eventlog orbitdb-instance (or name address) (clj->js opts)))
 
-(defn add-event [^js eventlog-instance data]
-  (.add eventlog-instance (clj->js data)))
+(def add-event signatures/add-event)
 
-(defn get-event [^js eventlog-instance hash]
-  (js->clj (.get eventlog-instance hash) :keywordize-keys true))
+(def get-event signatures/get-event)
 
-(defn iterator [^js eventlog-instance opts]
-  (.iterator eventlog-instance (clj->js opts)))
+(def iterator signatures/iterator)
 
-(defn iterator-collect [^js iterator]
-  (js->clj (.collect iterator) :keywordize-keys true))
+(def collect signatures/collect)
