@@ -1,5 +1,5 @@
 (ns tests.orbitdb-tests
-  (:require [cljs.core.async :as async :refer [go]]
+  (:require [cljs.core.async :refer [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [cljs.nodejs :as nodejs]
             [cljs.test :refer-macros [async deftest is]]
@@ -28,11 +28,11 @@
            (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
                  my-id (-> orbitdb-instance .-identity .-id)
                  db (<p! (-> (orbitdb/create-database orbitdb-instance {:name "creatures"
-                                                                      :type :eventlog
-                                                                      :opts {:accessController {:write [my-id]}
-                                                                             :directory "/home/filipz/orbitdb/test.eventlog"
-                                                                             :overwrite true
-                                                                             :replicate false}})))
+                                                                        :type :eventlog
+                                                                        :opts {:accessController {:write [my-id]}
+                                                                               :directory "/home/filipz/orbitdb/test.eventlog"
+                                                                               :overwrite true
+                                                                               :replicate false}})))
                  db-address (orbitdb/address db)
                  same-db (<p! (eventlog/eventlog orbitdb-instance {:address db-address}))
                  _ (<p! (eventlog/add-event db (rand-data)))
