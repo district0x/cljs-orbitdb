@@ -3,8 +3,18 @@
   :url "https://github.com/"
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojurescript "1.10.439"]]
-
+  :dependencies [;;[org.clojure/clojure "1.10.1"]
+                 [org.clojure/clojurescript "1.10.439"]]
+  ;; :plugins [[lein-codox "0.10.7"]]
+  ;; :codox {:source-paths "src/orbitdb"
+  ;;         :language :clojurescript
+  ;;         :namespaces [orbitdb.core
+  ;;                      orbitdb.eventlog
+  ;;                      orbitdb.keyvalue
+  ;;                      orbitdb.access_controllers
+  ;;                      orbitdb.counter
+  ;;                      orbitdb.docstore
+  ;;                      orbitdb.feed]}
   :deploy-repositories [["snapshots" {:url "https://clojars.org/repo"
                                       :username :env/clojars_username
                                       :password :env/clojars_password

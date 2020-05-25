@@ -101,7 +101,7 @@
                  db (<p! (-> (orbitdb/create-database orbitdb-instance {:name "kvstore"
                                                                         :type :keyvalue
                                                                         :opts {:accessController {:type "mytype"}
-                                                                               :directory "/home/filip/orbitdb/test.kvstore"
+                                                                               :directory "./orbitdb/test.kvstore"
                                                                                :overwrite true
                                                                                :replicate false}})
                              (.catch (fn [error]
