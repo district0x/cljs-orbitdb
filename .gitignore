@@ -9,4 +9,3 @@ tests/
 orbitdb/
 !src/orbitdb/
 yarn-error.log
-.clj-kondo/.cache/
