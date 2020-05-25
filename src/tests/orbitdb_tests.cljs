@@ -181,6 +181,3 @@
              (is (= 1 count-after))
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
-
-(deftest failure
-  (is false))
