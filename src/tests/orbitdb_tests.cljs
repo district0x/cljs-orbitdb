@@ -1,5 +1,5 @@
 (ns tests.orbitdb-tests
-  (:require [cljs.core.async :refer [go]]
+  (:require [cljs.core.async :as async :refer [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [cljs.nodejs :as nodejs]
             [cljs.test :refer-macros [async deftest is]]
@@ -27,12 +27,12 @@
          (go
            (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
                  my-id (-> orbitdb-instance .-identity .-id)
-                 db (<p! (orbitdb/create-database orbitdb-instance {:name "creatures"
-                                                                    :type :eventlog
-                                                                    :opts {:accessController {:write [my-id]}
-                                                                           :directory "/home/filip/orbitdb/test.eventlog"
-                                                                           :overwrite true
-                                                                           :replicate false}}))
+                 db (<p! (-> (orbitdb/create-database orbitdb-instance {:name "creatures"
+                                                                      :type :eventlog
+                                                                      :opts {:accessController {:write [my-id]}
+                                                                             :directory "/home/filipz/orbitdb/test.eventlog"
+                                                                             :overwrite true
+                                                                             :replicate false}})))
                  db-address (orbitdb/address db)
                  same-db (<p! (eventlog/eventlog orbitdb-instance {:address db-address}))
                  _ (<p! (eventlog/add-event db (rand-data)))
@@ -49,6 +49,7 @@
                                    creature
                                    (recur (inc i)
                                           (eventlog/get-event db (:next creature)))))]
+             (is db)
              (is (= (.-root db-address) (.-root (orbitdb/address same-db))))
              (is (= (.-path db-address) (.-path (orbitdb/address same-db))))
              (is (= 5 (count all-creatures)))
