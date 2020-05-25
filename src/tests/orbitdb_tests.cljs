@@ -30,7 +30,7 @@
                  db (<p! (-> (orbitdb/create-database orbitdb-instance {:name "creatures"
                                                                         :type :eventlog
                                                                         :opts {:accessController {:write [my-id]}
-                                                                               :directory "/home/filipz/orbitdb/test.eventlog"
+                                                                               :directory "./orbitdb/test.eventlog"
                                                                                :overwrite true
                                                                                :replicate false}})))
                  db-address (orbitdb/address db)
@@ -72,7 +72,7 @@
                  db (<p! (-> (orbitdb/create-database orbitdb-instance {:name "kvstore"
                                                                         :type :keyvalue
                                                                         :opts {:accessController {:type "mytype"}
-                                                                               :directory "/home/filip/orbitdb/test.kvstore"
+                                                                               :directory "./orbitdb/test.kvstore"
                                                                                :overwrite true
                                                                                :replicate false}})
                              (.catch (fn [error]
@@ -121,7 +121,7 @@
            (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
                  db (<p! (orbitdb/create-database orbitdb-instance {:name "posts"
                                                                     :type :feed
-                                                                    :opts {:directory "/home/filip/orbitdb/test.feedstore"
+                                                                    :opts {:directory "./orbitdb/test.feedstore"
                                                                            :overwrite true
                                                                            :replicate false}}))
                  _ (<p! (feed/add-event db {:title "Hello" :content "World"}))
@@ -144,7 +144,7 @@
            (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
                  db (<p! (orbitdb/create-database orbitdb-instance {:name "docs"
                                                                     :type :docstore
-                                                                    :opts {:directory "/home/filip/orbitdb/test.docstore"
+                                                                    :opts {:directory "./orbitdb/test.docstore"
                                                                            :overwrite true
                                                                            :replicate false}}))
                  id (str (random-uuid))
@@ -170,7 +170,7 @@
            (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
                  db (<p! (orbitdb/create-database orbitdb-instance {:name "play_count"
                                                                     :type :counter
-                                                                    :opts {:directory "/home/filip/orbitdb/test.counter"
+                                                                    :opts {:directory "./orbitdb/test.counter"
                                                                            :overwrite true
                                                                            :replicate false}}))
                  count-before (counter/value db)
