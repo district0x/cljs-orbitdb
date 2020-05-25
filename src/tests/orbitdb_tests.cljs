@@ -126,12 +126,12 @@
                  hash2 (<p! (feed/add-event db {:title "Fu" :content "Bar"}))
                  hash3 (<p! (feed/add-event db {:title "Foo" :content "Bar"}))
                  {{:keys [value]} :payload} (feed/get-event db hash2)
-                 _ (<p! (feed/remove-event db hash1))
-                 ]
-
-
+                 _ (<p! (feed/remove-event db hash2))
+                 posts (map #(-> % :payload :value)
+                            (-> (feed/iterator db {:limit -1}) eventlog/collect))]
              (is db)
              (is (= {:title "Fu" :content "Bar"} value))
-
+             (is (= 2 (count posts)))
+             (is (= #{{:content "World", :title "Hello"} {:content "Bar", :title "Foo"}} (set posts)) )
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
