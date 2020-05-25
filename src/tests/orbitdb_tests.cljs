@@ -53,45 +53,54 @@
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
 
-
-(deftest test-access-controllers
+(deftest test-access-controllers-allow
   (async done
          (go
-           (let [my-controller (access-controllers/create-access-controller )
+           (let [my-controller (access-controllers/create-access-controller {:type "mytype"
+                                                                             :can-append? (fn [entity identity-provider]
+                                                                                            ;; (prn "can I append?" entity)
+                                                                                            true)})
                  controllers (access-controllers/add-access-controller my-controller)
                  orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
-                                                                 :opts {:AccessControllers controllers}
-                                                                 }))
+                                                                 :opts {:AccessControllers controllers}}))
+                 db (<p! (-> (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {:type "mytype"}
+                                                                                   :directory "/home/filip/orbitdb/test.kvstore"
+                                                                                   :overwrite true
+                                                                                   :replicate false})
+                             (.catch (fn [error]
+                                       (prn "ERROR" error)))))
+                 hash (<p! (-> (keyvalue/set-key db "fu" {:fu "bar"})
+                               (.then (fn [hash]
+                                        hash))
+                               (.catch (fn [error]
+                                        error))))
+                 val (keyvalue/get-value db "fu")]
+             (is db)
+             (is (access-controllers/supported? "mytype"))
+             (is (= {:fu "bar"} val))
+             (orbitdb/disconnect orbitdb-instance)
+             (done)))))
 
-                 db (<p! (-> (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {
-                                                                                                   :type "othertype"
-                                                                                                   }
-                                                                                ;; :directory "/home/filip/orbitdb/test.kvstore"
-                                                                                :overwrite true
-                                                                                ;; :replicate false
-                                                                                })
-
-                          (.then (fn [res]
-                                   (prn "RESULT" res)
-                                   res)
-
-                                 )
-
-                          (.catch (fn [error]
-
-                                    (prn "ERROR" error)
-
-                                    ))
-
-                          ))
-
-                 hash (<p! (keyvalue/set-key db "fu" {:fu "bar"}))
-                 ;; val (keyvalue/get-value db "fu")
-                 _ (<p! (js/Promise.resolve true))]
-
-             (prn "BLA" db)
-
-             ;; (is (access-controllers/supported? "orbitdb"))
-             ;; (is (access-controllers/supported? "othertype"))
+(deftest test-access-controllers-deny
+  (async done
+         (go
+           (let [my-controller (access-controllers/create-access-controller {:type "mytype"
+                                                                             :can-append? (fn [entity identity-provider]
+                                                                                            false)})
+                 controllers (access-controllers/add-access-controller my-controller)
+                 orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
+                                                                 :opts {:AccessControllers controllers}}))
+                 db (<p! (-> (orbitdb/create orbitdb-instance "kvstore" :keyvalue {:accessController {:type "mytype"}
+                                                                                   :directory "/home/filip/orbitdb/test.kvstore"
+                                                                                   :overwrite true
+                                                                                   :replicate false})
+                             (.catch (fn [error]
+                                       (prn "ERROR" error)))))
+                 response (<p! (-> (keyvalue/set-key db "fu" "bar")
+                               (.catch (fn [error]
+                                        error))))]
+             (is db)
+             (is (access-controllers/supported? "mytype"))
+             (is (instance? js/Error response))
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
