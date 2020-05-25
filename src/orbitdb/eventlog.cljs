@@ -2,8 +2,8 @@
   (:require [orbitdb.signatures :as signatures]))
 
 (defn eventlog [^js orbitdb-instance {:keys [name address opts]
-                                       :or {opts {}}}]
-  (.eventlog orbitdb-instance (or name address) (clj->js opts)))
+                                      :or {opts {}}}]
+  (.eventlog orbitdb-instance (or address name) (clj->js opts)))
 
 (def add-event signatures/add-event)
 

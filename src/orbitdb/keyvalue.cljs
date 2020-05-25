@@ -1,7 +1,8 @@
 (ns orbitdb.keyvalue)
 
-(defn keyvalue [^js orbitdb-instance {:keys [name opts]}]
-  (.keyvalue orbitdb-instance name (clj->js opts)))
+(defn keyvalue [^js orbitdb-instance {:keys [name address opts]
+                                      :or {opts {}}}]
+  (.keyvalue orbitdb-instance (or address name) (clj->js opts)))
 
 (defn set-key [^js keyvalue-instance k v]
   (.set keyvalue-instance k (clj->js v)))

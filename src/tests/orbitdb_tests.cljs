@@ -6,6 +6,7 @@
             [orbitdb.core :as orbitdb]
             [orbitdb.keyvalue :as keyvalue]
             [orbitdb.eventlog :as eventlog]
+            [orbitdb.docstore :as docstore]
             [orbitdb.feed :as feed]
             [orbitdb.access-controllers :as access-controllers]))
 
@@ -111,12 +112,10 @@
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
 
-
 (deftest test-feedstore
   (async done
          (go
-           (let [
-                 orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
+           (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
                  db (<p! (orbitdb/create-database orbitdb-instance {:name "posts"
                                                                     :type :feed
                                                                     :opts {:directory "/home/filip/orbitdb/test.feedstore"
@@ -132,6 +131,30 @@
              (is db)
              (is (= {:title "Fu" :content "Bar"} value))
              (is (= 2 (count posts)))
-             (is (= #{{:content "World", :title "Hello"} {:content "Bar", :title "Foo"}} (set posts)) )
+             (is (= #{{:content "World", :title "Hello"} {:content "Bar", :title "Foo"}} (set posts)))
+             (orbitdb/disconnect orbitdb-instance)
+             (done)))))
+
+(deftest test-docstore
+  (async done
+         (go
+           (let [orbitdb-instance (<p! (orbitdb/create-instance {:ipfs-host "http://localhost:5001"}))
+                 db (<p! (orbitdb/create-database orbitdb-instance {:name "docs"
+                                                                    :type :docstore
+                                                                    :opts {:directory "/home/filip/orbitdb/test.docstore"
+                                                                           :overwrite true
+                                                                           :replicate false}}))
+
+                 id (str (random-uuid))
+                 hash (<p! (docstore/put-doc db {:_id id :doc "bar"  :views 10}))
+                 _ (<p! (docstore/put-doc db {:_id (str (random-uuid)) :doc "fu"  :views 1}))
+                 _ (<p! (docstore/put-doc db {:_id (str (random-uuid)) :doc "foo"  :views 5}))
+                 bar (docstore/get-doc db id)
+                 all (docstore/get-doc db "")
+                 >5 (docstore/query db (fn [doc] (< 5 (:views doc))))]
+             (is db)
+             (is (= "bar" (-> bar first :doc)))
+             (is (= 3 (count all)))
+             (is (= 1 (count >5)))
              (orbitdb/disconnect orbitdb-instance)
              (done)))))
