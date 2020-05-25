@@ -10,6 +10,9 @@
 
 (def get-doc signatures/get-event)
 
+(defn del-doc [^js docstore-instance hash]
+  (.del docstore-instance hash))
+
 (defn query [^js docstore-instance predicate-fn]
   (js->clj (.query docstore-instance (fn [doc]
                                 (predicate-fn (js->clj doc :keywordize-keys true))))

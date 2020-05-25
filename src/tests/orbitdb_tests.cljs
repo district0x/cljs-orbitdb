@@ -144,11 +144,13 @@
                                                                     :opts {:directory "/home/filip/orbitdb/test.docstore"
                                                                            :overwrite true
                                                                            :replicate false}}))
-
                  id (str (random-uuid))
                  hash (<p! (docstore/put-doc db {:_id id :doc "bar"  :views 10}))
                  _ (<p! (docstore/put-doc db {:_id (str (random-uuid)) :doc "fu"  :views 1}))
                  _ (<p! (docstore/put-doc db {:_id (str (random-uuid)) :doc "foo"  :views 5}))
+                 bar2-id (str (random-uuid))
+                 _ (<p! (docstore/put-doc db {:_id bar2-id :doc "bar" :views 6}))
+                 _ (<p! (docstore/del-doc db bar2-id))
                  bar (docstore/get-doc db id)
                  all (docstore/get-doc db "")
                  >5 (docstore/query db (fn [doc] (< 5 (:views doc))))]
