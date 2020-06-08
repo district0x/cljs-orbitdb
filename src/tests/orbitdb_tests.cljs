@@ -47,8 +47,9 @@
                                       creature first-creature]
                                  (if (= 4 i)
                                    creature
-                                   (recur (inc i)
-                                          (eventlog/get-event db (:next creature)))))]
+                                   (do
+                                     (recur (inc i)
+                                              (eventlog/get-event db (:next creature))))))]
              (is db)
              (is (= (.-root db-address) (.-root (orbitdb/address same-db))))
              (is (= (.-path db-address) (.-path (orbitdb/address same-db))))
