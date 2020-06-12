@@ -20,7 +20,9 @@
   (.put docstore-instance (clj->js doc) (clj->js (or opts {}))))
 
 (def get-doc
-  "Takes an OrbitDB docstore database instance and a hash of an entry (string).
+  "`(get-doc database-instance data & [opts])`
+
+  Takes an OrbitDB docstore database instance and a hash of an entry (string).
   Returns a map with the contents of that entry."
   signatures/get-event)
 

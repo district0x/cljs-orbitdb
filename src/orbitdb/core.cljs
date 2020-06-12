@@ -36,13 +36,19 @@
 
   `opts` is a map with:
     `:accessController`: a map with single keyword:
+
       `:write` (vector of strings): a whitelist of hex encoded public keys with write access to the database. You can specify a public database by passing ['*']
+
       or
+
       `:type` (string): a defined and registered AccessController type
 
     `:directory` (string): path to be used for the database files.
+
     `:overwrite` (boolean): Overwrite an existing database. Default: false.
+
     `:replicate` (boolean): Replicate the database with peers, requires IPFS PubSub. Default: true.
+
     `:meta`: a map with the manifest of the database. Default: nil."
   [^js orbitdb-instance {:keys [name type opts]}]
   (.create orbitdb-instance name (cljs.core/name type) (clj->js opts)))

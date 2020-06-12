@@ -15,32 +15,44 @@
   (.feed orbitdb-instance (or address name) (clj->js opts)))
 
 (defn remove-event
-  "Removes an item pointed to by the hash value.
+  "Removes an entry stored at the hash value.
   Returns a Promise that resolves to the hash of the deleted entry."
   [^js feed-instance hash]
   (.remove feed-instance hash))
 
 (def add-event
-  "Takes a OrbitDB feed database instance and a map with the data to store.
+  "`(add-event database-instance data & [opts])`
+
   Returns a js/Promise that resolves to the hash of the entry (string)."
   signatures/add-event)
 
 (def get-event
-  "Takes an OrbitDB feed database instance and a hash of an entry (string).
+  "`(get-event database-instance hash)`
+
+  Takes an OrbitDB instance and a hash of the entry (string).
   Returns a map with the contents of that entry."
   signatures/get-event)
 
 (def iterator
-  "Returns an Array of Objects based on the map of options:
+  "`(iterator database-instance opts)`
+
+  Returns an Array of Objects based on the map of options:
 
    `:gt` (string): Greater than, takes an item's hash.
+
    `:gte` (string): Greater than or equal to, takes an item's hash.
+
    `:lt` (string): Less than, takes an item's hash.
+
    `:lte` (string): Less than or equal to, takes an item's hash value.
+
    `:limit` (integer): Limiting the entries of result, defaults to 1, and -1 means all items.
+
    `:reverse` (boolean): If set to true will result in reversing the result."
   signatures/iterator)
 
 (def collect
-  "Takes an iterator as the argument and evaluates it, returns a vector of results."
+  "`(collect iterator)`
+
+  Takes an iterator as the argument and evaluates it, returns a vector of results."
   signatures/collect)
