@@ -64,7 +64,7 @@
   (async done
          (go
            (let [my-controller (access-controllers/create-access-controller {:type "mytype"
-                                                                             ;; NOTE: args entity identity-provider
+                                                                             ;; NOTE: entity identity-provider
                                                                              :can-append? (fn [_ _]
                                                                                             true)})
                  controllers (access-controllers/add-access-controller my-controller)
