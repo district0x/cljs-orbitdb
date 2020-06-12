@@ -16,8 +16,8 @@
 (defn set-key
   "Sets a value (map) at a given key (string).
   Returns a js/Promise that resolves to hash of the entry (string)."
-  [^js keyvalue-instance k v]
-  (.set keyvalue-instance k (clj->js v)))
+  [^js keyvalue-instance k v & [opts]]
+  (.set keyvalue-instance k (clj->js v) (clj->js (or opts {}))))
 
 (defn get-value
   "Returns a map with the contents of an entry (map) stored at the key (string)"

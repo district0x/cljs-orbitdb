@@ -16,8 +16,8 @@
 
 (defn put-doc
   "Returns a Promise that resolves to the hash of the entry (string)."
-  [^js docstore-instance doc]
-  (.put docstore-instance (clj->js doc)))
+  [^js docstore-instance doc & [opts]]
+  (.put docstore-instance (clj->js doc) (clj->js (or opts {}))))
 
 (def get-doc
   "Takes an OrbitDB docstore database instance and a hash of an entry (string).
