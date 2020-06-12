@@ -81,7 +81,7 @@ Here is how you can persist some data using `add-event` function in `orbitdb.eve
 This function returns a js/Promise which evaluates to the hash of the persisted entry.
 Other database types have corresponding functions in their respective namespaces.
 
-*NOTE*
+*Note*
 
 _OrbitDB does not automatically pin content to IPFS. To pin the entry, pass the optional `{ pin: true }` in the options:_
 
@@ -93,7 +93,7 @@ _OrbitDB does not automatically pin content to IPFS. To pin the entry, pass the 
 
 You can specify the peers that have write-access to a database or write a custom access controller.
 
-*Note!*
+*Note*
 
 _OrbitDB currently supports only dynamically adding write-access, meaning that write-access cannot be revoked once added_
 
