@@ -36,7 +36,7 @@
 
   `opts` is a map with:
     `:accessController`: a map with single keyword:
-      `:write` (vector): a whitelist of hex encoded public keys with write access to the database
+      `:write` (vector of strings): a whitelist of hex encoded public keys with write access to the database. You can specify a public database by passing ['*']
       or
       `:type` (string): a defined and registered AccessController type
 

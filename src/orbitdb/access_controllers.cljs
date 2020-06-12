@@ -5,11 +5,24 @@
              :refer
              [AccessController]]))
 
-(defn add-access-controller [^js controller]
+(defn add-access-controller
+  "Add a custom AccessController to the AccessControllers (a mutable singleton).
+  Returns the updated AccessControllers instance that can be passed passing to OrbitDB.
+
+  *NOTE:*
+  The AccessController object is not directly exposed by this library, `add-access-controller` is the only function which returns it."
+  [^js controller]
   (.addAccessController ^js AccessControllers (clj->js {:AccessController controller}))
   AccessControllers)
 
-(defn create-access-controller [{:keys [:type :can-append?]}]
+(defn create-access-controller
+  "Creates and returns a custom AccessController object.
+  Takes a map with:
+
+  `:type` (string): name which uniqely identifies the controller.
+
+  `:can-append`: a function with a followinf signature `fn [entity identity-provider]`"
+  [{:keys [:type :can-append?]}]
   (let [^js CustomAccessController (fn []
                                      (this-as this
                                        this))]
@@ -29,5 +42,7 @@
                                                                            (js->clj identity-provider :keywordize-keys true))))
     CustomAccessController))
 
-(defn supported? [type]
+(defn supported?
+  "Returns `true` when AccessController identified as `type` is added to the AccessControllers object."
+  [type]
   (.isSupported ^js AccessControllers type))
