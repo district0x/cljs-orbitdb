@@ -49,7 +49,7 @@
                                    creature
                                    (do
                                      (recur (inc i)
-                                              (eventlog/get-event db (:next creature))))))]
+                                            (eventlog/get-event db (:next creature))))))]
              (is db)
              (is (= (.-root db-address) (.-root (orbitdb/address same-db))))
              (is (= (.-path db-address) (.-path (orbitdb/address same-db))))
@@ -65,6 +65,7 @@
          (go
            (let [my-controller (access-controllers/create-access-controller {:type "mytype"
                                                                              ;; NOTE: entity identity-provider
+                                                                             ;; IdentityProvider https://github.com/orbitdb/orbit-db-identity-provider/blob/master/src/identity-provider-interface.js
                                                                              :can-append? (fn [_ _]
                                                                                             true)})
                  controllers (access-controllers/add-access-controller my-controller)

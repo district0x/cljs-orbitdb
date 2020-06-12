@@ -114,4 +114,37 @@ If you want to create a database with a public access you can do so by passing a
                             :opts {:accessController {:write ["*"]}}})
 ```
 
-You can also create a custom access controller, which regulates who and what can be written to your database, with a predicate function.
+You can also create a custom access controller, which regulates who and what can be written to your database, with a predicate function with two arguments:
+- `entry`: the persisted entry
+- `identity-provider`: an instance of the [IdentityProvider](https://github.com/orbitdb/orbit-db-identity-provider)
+
+The functions for creating and managing custom access controllers are in the `orbitdb.access-controllers` namespace.
+Here is how you can create an access controller:
+
+```clojure
+(def my-controller (create-access-controller {:type "mytype"
+                                              :can-append? (fn [entry identity-provider]
+                                                             (and (= "bar" (:fu entry))
+                                                                  (= (-> ^js orbitdb-instance .-identity .-id) (-> ^js identity-provider .-id))))}))
+```
+
+Next you need to add it:
+
+```clojure
+(def access-controllers (add-access-controller my-controller))
+```
+
+The `add-access-controller` function returns the instance of AccessControllers object, which is a singleton. You need to pass it in the options map when creating an instance of the OrbitDB:
+
+```clojure
+orbitdb-instance (orbitdb/create-instance {:ipfs-host "http://localhost:5001"
+                                           :opts {:AccessControllers access-controllers}})
+```
+
+To use the controller with a database, specify it when creating that database:
+
+```clojure
+(create-database orbitdb-instance {:name "creatures"
+                                   :type :eventlog
+                                   :opts {:accessController {:type ["my-type"]}}})
+```
