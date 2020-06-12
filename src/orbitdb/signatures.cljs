@@ -1,7 +1,7 @@
-(ns orbitdb.signatures)
+(ns ^:no-doc orbitdb.signatures)
 
-(defn add-event [^js database-instance data]
-  (.add database-instance (clj->js data)))
+(defn add-event [^js database-instance data & [opts]]
+  (.add database-instance (clj->js data) (clj->js (or opts {}))))
 
 (defn get-event [^js database-instance hash]
   (js->clj (.get database-instance hash) :keywordize-keys true))

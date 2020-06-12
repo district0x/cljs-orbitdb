@@ -1,4 +1,4 @@
-(ns tests.orbitdb-tests
+(ns ^:no-doc tests.orbitdb-tests
   (:require [cljs.core.async :refer [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [cljs.nodejs :as nodejs]
@@ -35,10 +35,10 @@
                                                                                :replicate false}})))
                  db-address (orbitdb/address db)
                  same-db (<p! (eventlog/eventlog orbitdb-instance {:address db-address}))
-                 _ (<p! (eventlog/add-event db (rand-data)))
-                 _ (<p! (eventlog/add-event db (rand-data)))
-                 _ (<p! (eventlog/add-event db (rand-data)))
-                 _ (<p! (eventlog/add-event db (rand-data)))
+                 _ (<p! (eventlog/add-event db (rand-data) {:pin false}))
+                 _ (<p! (eventlog/add-event db (rand-data) {:pin false}))
+                 _ (<p! (eventlog/add-event db (rand-data) {:pin false}))
+                 _ (<p! (eventlog/add-event db (rand-data) {:pin false}))
                  last-hash (<p! (eventlog/add-event db (rand-data)))
                  first-creature (eventlog/get-event db last-hash)
                  ;; iterator
@@ -63,7 +63,8 @@
   (async done
          (go
            (let [my-controller (access-controllers/create-access-controller {:type "mytype"
-                                                                             ;; NOTE: args entity identity-provider
+                                                                             ;; NOTE: entity identity-provider
+                                                                             ;; IdentityProvider https://github.com/orbitdb/orbit-db-identity-provider/blob/master/src/identity-provider-interface.js
                                                                              :can-append? (fn [_ _]
                                                                                             true)})
                  controllers (access-controllers/add-access-controller my-controller)

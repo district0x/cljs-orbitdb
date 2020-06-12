@@ -1,4 +1,5 @@
 .lein-failures
+pom.xml
 .shadow-cljs/
 node_modules/
 resources/
@@ -10,3 +11,4 @@ orbitdb/
 !src/orbitdb/
 yarn-error.log
 .clj-kondo/.cache/
+target/
